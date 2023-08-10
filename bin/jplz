@@ -1,0 +1,6 @@
+(import jplz/main)
+
+(defn main
+  [& argv]
+  (main/main ;argv))
+
