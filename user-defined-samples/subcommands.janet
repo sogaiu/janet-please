@@ -17,22 +17,6 @@
 
 ########################################################################
 
-(def juat-config
-  {:help "Run juat tests."
-   :rules []
-   :fn (fn [_meta _args]
-         (os/execute ["janet"
-                      (string (os/getenv "HOME")
-                              "/"
-                              "src/"
-                              "janet-usages-as-tests/"
-                              "janet-usages-as-tests/"
-                              "make-and-run-tests.janet" )
-                      (os/cwd)]
-                     :px))})
-
-########################################################################
-
 (def chomp-slow-config
   {:help "Remove trailing newlines from end of file."
    :rules [:file-path {:help "File to examine and may be change"}]
@@ -58,6 +42,5 @@
 # required - used by jplz/main.janet
 (def subcommands
   ["my/sample" sample-config
-   "juat" juat-config
    "chomp-slow" chomp-slow-config])
 
