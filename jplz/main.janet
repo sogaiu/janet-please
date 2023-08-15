@@ -144,7 +144,7 @@
   (cond
     (get-in res [:opts "version"])
     # XXX: use timestamp from file content?
-    (print "Some version")
+    (printf "%s: Some version" cmd-name)
 
     (and help (not (empty? help)))
     (prin help)
