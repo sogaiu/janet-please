@@ -137,22 +137,17 @@
   (def help (get res :help))
   (def err (get res :err))
 
-  (when (and err
-             (string/has-prefix?
-               (string cmd-name ": unrecognized subcommand") err))
+  (when (and err (not (empty? err)))
     (eprint err)
     (os/exit 1))
 
   (cond
-    (and help (not (empty? help)))
-    (prin help)
-
-    (and err (not (empty? err)))
-    (eprin err)
-
     (get-in res [:opts "version"])
     # XXX: use timestamp from file content?
     (print "Some version")
+
+    (and help (not (empty? help)))
+    (prin help)
 
     (do
       (def [subconfig sub-res] (get-subconfig subcommands res))
