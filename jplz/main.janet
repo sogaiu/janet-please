@@ -75,8 +75,7 @@
     (set sub-args sub)
     (set res (get sub :cmd)))
   (def i (find-index (fn [x] (= res x)) subcommands))
-  (if (nil? i)
-    [nil nil]
+  (when i
     [(get subcommands (inc i)) sub-args]))
 
 (defn load-subcommands
@@ -134,33 +133,54 @@
   (when (tuple? result)
     (utils/report-error result)
     (os/exit 1))
+
   (def subcommands result)
   (deprintf "subcommands: %p\n" subcommands)
+
   (def full-config (merge config {:subs subcommands}))
   (deprintf "full-config: %p\n" full-config)
+
   (def res (ab/parse-args cmd-name full-config))
   (deprintf "parse-args returned: %p\n" res)
-  (def help (get res :help))
-  (def err (get res :err))
 
-  (when (and err (not (empty? err)))
+  (def err (get res :err))
+  (deprintf "err: %p\n" err)
+
+  # hopefully failing fast is appropriate
+  (when (not (empty? err))
     (eprint err)
     (os/exit 1))
 
-  (cond
-    (get-in res [:opts "version"])
-    # XXX: use timestamp from file content?
-    (printf "%s: Some version" cmd-name)
+  (def help (get res :help))
+  (deprintf "help: %p\n" help)
 
-    (and help (not (empty? help)))
+  (def opts (get res :opts))
+  (deprintf "opts: %p\n" opts)
+
+  (def params (get res :params))
+  (deprintf "params: %p\n" params)
+
+  (def sub (get res :sub))
+  (deprintf "sub: %p\n" sub)
+
+  (cond
+    (get opts "help")
     (prin help)
 
-    (do
-      (def [subconfig sub-res] (get-subconfig subcommands res))
+    (get opts "version")
+    (printf "%s: Some version" cmd-name)
+
+    (def result (get-subconfig subcommands res))
+    (let [[subconfig sub-res] result]
       (if subconfig
         ((subconfig :fn) @{} sub-res)
         # XXX: don't know if this is so good
-        (prin (get (with-dyns [:args @[cmd-name "--help"]]
-                     (ab/parse-args cmd-name full-config))
-                   :help))))))
+        (let [a-res (with-dyns [:args @[cmd-name "--help"]]
+                      (ab/parse-args cmd-name full-config))]
+          (prin (get a-res :help)))))
+
+    (not (empty? help))
+    (prin help)
+
+    (do (eprint "Unexpected state") (os/exit 1))))
 
