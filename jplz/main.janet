@@ -28,6 +28,12 @@
 
 ########################################################################
 
+(import ./version)
+
+(def ver-string version/ver-string)
+
+########################################################################
+
 (import ./utils)
 
 ########################################################################
@@ -168,7 +174,7 @@
     (prin help)
 
     (get opts "version")
-    (printf "%s: Some version" cmd-name)
+    (printf "%s: %s" cmd-name ver-string)
 
     (def result (get-subconfig subcommands res))
     (let [[subconfig sub-res] result]
