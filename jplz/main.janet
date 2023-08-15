@@ -53,7 +53,13 @@
   {:info {:about (string/format "Janet, please ... (%s)"
                                 cmd-name)
           :opts-header "The following global options are available:"
-          :subs-header "The following subcommands are available:"}
+          :subs-header "The following subcommands are available:"
+          :usages [(string/format "Usage: %s [--help | --version]"
+                                  cmd-name)
+                   (string/format "       %s help <subcommand>"
+                                  cmd-name)
+                   (string/format "       %s <subcommand> [<args>]"
+                                  cmd-name)]}
    :rules ["--version" {:help "Show version information."
                         :kind :flag
                         :short "v"}]})
