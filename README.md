@@ -106,6 +106,11 @@ things working is to place a file named `jplz` under
 `~/.local/share/bash-completion/completions/` and populate it with the
 output from `jplz bash-completion`.
 
+## Related
+
+* [`jeep`](https://github.com/pyrmont/jeep)
+* [`sd`](https://github.com/ianthehenry/sd)
+
 ## Credits
 
 * pyrmont - `jplz` was inspired through use and discussion of
