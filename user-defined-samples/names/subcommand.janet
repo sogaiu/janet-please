@@ -44,7 +44,7 @@
 
          (when (or (not cand)
                    (empty? cand))
-           (eprint "Please invoke jplz name --help for usage.")
+           (eprint "Please invoke jplz names --help for usage.")
            (os/exit 1))
 
          (def matches
