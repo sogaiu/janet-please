@@ -108,6 +108,7 @@ output from `jplz bash-completion`.
 
 ## Related
 
+* [`groan`](https://github.com/keithy/groan)
 * [`jeep`](https://github.com/pyrmont/jeep)
 * [`sd`](https://github.com/ianthehenry/sd)
 * [`sub`](https://github.com/qrush/sub)
