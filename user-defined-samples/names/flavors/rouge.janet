@@ -13,7 +13,7 @@
 
   (stringify [`*=` `all-bindings` `nil?` `+=`])
   # =>
-  "'*=', 'all-bindings', 'nil?', '+='"
+  "*= all-bindings nil? +="
 
   )
 
