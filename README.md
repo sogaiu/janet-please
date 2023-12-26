@@ -111,6 +111,7 @@ output from `jplz bash-completion`.
 * [`jeep`](https://github.com/pyrmont/jeep)
 * [`sd`](https://github.com/ianthehenry/sd)
 * [`sub`](https://github.com/qrush/sub)
+* [`tome`](https://github.com/toumorokoshi/tome)
 
 ## Credits
 
