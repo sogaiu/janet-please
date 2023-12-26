@@ -114,23 +114,23 @@
     ``
     2 2 2 40)
   # =>
-  ``
-    With a peg-special, but no options,
-    show docs and usages. If any of
-    "integer", "string", or "struct" are
-    specified as the "peg-special", show
-    docs and usages about using those as
-    PEG constructs.
+  @``
+     With a peg-special, but no options,
+     show docs and usages. If any of
+     "integer", "string", or "struct" are
+     specified as the "peg-special", show
+     docs and usages about using those as
+     PEG constructs.
 
-    With the `-d` or `--doc` option, show
-    docs for specified PEG special, or if
-    none specified, for a randomly chosen
-    one.
+     With the `-d` or `--doc` option, show
+     docs for specified PEG special, or if
+     none specified, for a randomly chosen
+     one.
 
-    With the `-q` or `--quiz` option,
-    show quiz question for specified PEG
-    special, or if none specified, for a
-    randonly chosen one.
-  ``
+     With the `-q` or `--quiz` option,
+     show quiz question for specified PEG
+     special, or if none specified, for a
+     randonly chosen one.
+   ``
 
   )
