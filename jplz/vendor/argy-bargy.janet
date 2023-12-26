@@ -63,8 +63,8 @@
           (errorf "each rule must be struct or table: %p" v))
         (unless (or (keyword? k) ({:flag true :count true :single true :multi true} (v :kind)))
           (errorf "each option rule must be of kind :flag, :count, :single or :multi: %p" v))
-        (when (and (keyword? k) rest-capture? (v :rest?))
-          (errorf "multiple parameter rules cannot capture :rest?: %p" v))
+        (when (and (keyword? k) rest-capture? (v :splat?))
+          (errorf "multiple parameter rules cannot capture :splat? %p" v))
         (cond
           (string? k)
           (let [name (if (string/has-prefix? "--" k) (string/slice k 2) k)]
@@ -76,7 +76,7 @@
           (keyword? k)
           (do
             (array/push prules [k v])
-            (set rest-capture? (v :rest?))))))
+            (set rest-capture? (v :splat?))))))
     (++ i))
 
   (unless help?
@@ -375,7 +375,7 @@
                               (unless (rule :req?) "[")
                               "<"
                               proxy
-                              (when (rule :rest?) "...")
+                              (when (rule :splat?) "...")
                               ">"
                               (unless (rule :req?) "]"))
                       )
@@ -493,7 +493,7 @@
   (def params (result :params))
   (def arg (args i))
   (if-let [[name rule] prule]
-    (if (rule :rest?)
+    (if (rule :splat?)
       (do
         (def vals @[])
         (var j 0)
@@ -516,28 +516,38 @@
     (usage-error "too many parameters passed")))
 
 
+(defn- check-options
+  ```
+  Checks options
+  ```
+  [result rules]
+  (def opts (result :opts))
+  (each [name rule] rules
+    (when (and (not (nil? rule)) (rule :default) (nil? (opts name)))
+      (put-in result [:opts name] (rule :default)))))
+
+
 (defn- check-params
   ```
   Checks params
   ```
   [result params rules]
-  (when (and (empty? err) (empty? help))
-    (def num-params (length params))
-    (var i 0)
-    (def num-rules (length rules))
-    (var j 0)
-    (while (< i num-params)
-      (def rule (get rules j))
-      (set i (consume-param result rule params i (- num-rules j 1)))
-      (++ j))
-    (while (< j num-rules)
-      (def [name rule] (rules j))
-      (if (rule :req?)
-        (do
-          (usage-error (or (rule :proxy) name) " is required")
-          (break))
-        (put-in result [:params name] (rule :default)))
-      (++ j))))
+  (def num-params (length params))
+  (var i 0)
+  (def num-rules (length rules))
+  (var j 0)
+  (while (< i num-params)
+    (def rule (get rules j))
+    (set i (consume-param result rule params i (- num-rules j 1)))
+    (++ j))
+  (while (< j num-rules)
+    (def [name rule] (rules j))
+    (if (rule :req?)
+      (do
+        (usage-error (or (rule :proxy) name) " is required")
+        (break))
+      (put-in result [:params name] (rule :default)))
+    (++ j)))
 
 
 (defn- check-subcommand
@@ -545,9 +555,8 @@
   Checks subcommands
   ```
   [result config]
-  (when (and (empty? err) (empty? help))
-    (unless (or (nil? (config :subs)) (result :sub))
-      (usage config))))
+  (unless (or (nil? (config :subs)) (result :sub))
+    (usage config)))
 
 
 # Parsing functions
@@ -618,8 +627,10 @@
     (when (nil? i)
       (break)))
 
-  (check-subcommand result config)
-  (check-params result params prules)
+  (when (and (empty? err) (empty? help))
+    (check-subcommand result config)
+    (check-options result orules)
+    (check-params result params prules))
 
   result)
 
@@ -684,8 +695,8 @@
     considered to fail parsing and a usage error message is printed instead.
     Instead of a function, a keyword can be provided and Argy-Bargy's converter
     will be used instead. The valid keywords are `:string` and `:integer`.
-  * `:rest?` - Whether this rule should capture all unassigned parameters. Only
-    one parameter rule can have `:rest?` set to `true`.
+  * `:splat?` - Whether this rule should capture all unassigned parameters. Only
+    one parameter rule can have `:splat?` set to `true`.
 
   ### Info
 

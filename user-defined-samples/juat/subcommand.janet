@@ -7,7 +7,7 @@
 (def config
   {:help about-string
    :rules [:paths {:help "Input files and/or directories"
-                   :rest? true}]
+                   :splat? true}]
    :info {:about about-string}
    :fn (fn [_meta args]
          (def paths
