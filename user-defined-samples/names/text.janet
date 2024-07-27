@@ -25,8 +25,8 @@
     A second paragraph.
     ``)
   # =>
-  @["A" "first" "paragraph." 
-    "\n\n" 
+  @["A" "first" "paragraph."
+    "\n\n"
     "A" "second" "paragraph."]
 
   (split-words
@@ -37,8 +37,8 @@
     A second paragraph.
     ``)
   # =>
-  @["A" "first" "paragraph." 
-    "\n\n" 
+  @["A" "first" "paragraph."
+    "\n\n"
     "A" "second" "paragraph."]
 
   )
@@ -132,5 +132,180 @@
      special, or if none specified, for a
      randonly chosen one.
    ``
+
+  )
+
+# XXX: what to do if some item exceeds limit - indent?  options:
+#
+#      1. abort execution
+#      2. insert at current position and go to next line
+#      3. insert at beginning of next line + indent and go to next
+#         line
+(defn layout
+  [list indent limit &opt eol]
+  (default eol "\n")
+  (def buf @"")
+  (def indent-spaces (string/repeat " " indent))
+  (def list-len (length list))
+  (var col indent) # left-most column is 0
+  (var idx 0)
+  #(var insert-failed nil)
+  (buffer/push buf indent-spaces)
+  (while (< idx list-len)
+    (def item (get list idx))
+    (def item-len (length item))
+    (when (> item-len (- limit indent))
+      (errorf "item len > limit - indent: %d > (%d - %d)"
+              item-len limit indent))
+    (if (< (+ col item-len) limit)
+      (do
+        (buffer/push buf item " ")
+        (+= col item-len 1)
+        #(set insert-failed false)
+        (++ idx))
+      (do
+        #(assert (not insert-failed)
+        #        (string/format "item len > limit - indent: %d > (%d - %d)"
+        #                       item-len limit indent))
+        # remove last space
+        (buffer/popn buf 1)
+        (buffer/push buf eol)
+        (buffer/push buf indent-spaces)
+        (set col indent)
+        #(set insert-failed true)
+        )))
+  #
+  buf)
+
+(comment
+
+  (layout '[abstract? accumulate accumulate2 all all-bindings all-dynamics
+            any? apply array array/clear array/concat array/ensure
+            array/fill array/insert array/new array/new-filled array/peek
+            array/pop]
+          6 72)
+
+  (def a-list
+    '[abstract? accumulate accumulate2 all all-bindings all-dynamics
+      any? apply array array/clear array/concat array/ensure array/fill
+      array/insert array/new array/new-filled array/peek array/pop
+      array/push array/remove array/slice array/trim array/weak array?
+      asm
+
+      bad-compile bad-parse band blshift bnot boolean? bor brshift
+      brushift buffer buffer/bit buffer/bit-clear buffer/bit-set
+      buffer/bit-toggle buffer/blit buffer/clear buffer/fill
+      buffer/format buffer/format-at buffer/from-bytes buffer/new
+      buffer/new-filled buffer/popn buffer/push buffer/push-at
+      buffer/push-byte buffer/push-float32 buffer/push-float64
+      buffer/push-string buffer/push-uint16 buffer/push-uint32
+      buffer/push-uint64 buffer/push-word buffer/slice buffer/trim
+      buffer? bundle/add bundle/add-directory bundle/add-file
+      bundle/install bundle/installed? bundle/list bundle/manifest
+      bundle/prune bundle/reinstall bundle/topolist bundle/uninstall
+      bundle/update-all bxor bytes?])
+
+  (layout a-list 6 72)
+
+  )
+
+(defn group-by-nth-char
+  [things n]
+  (def groups @{})
+  (def before-key (dec (chr "A")))
+  (each item things
+    (def head (get item n))
+    (cond
+      (or (<= (chr "a") head (chr "z"))
+          (<= (chr "A") head (chr "Z")))
+      (put groups head
+           (array/push (get groups head @[])
+                       item))
+      #
+      (put groups before-key
+           (array/push (get groups before-key @[])
+                       item))))
+  #
+  groups)
+
+(defn group-nicely
+  [things]
+  (def a-first-char (get-in things [0 0]))
+  (def things-all-start-same?
+    (all |(= a-first-char (get $ 0)) things))
+  (if things-all-start-same?
+    (group-by-nth-char things 1)
+    (group-by-nth-char things 0)))
+
+(comment
+
+  (group-nicely
+    '@[% * + - / < <= = > >=
+
+       abstract? accumulate accumulate2 all all-bindings all-dynamics
+       any? apply array array/clear array/concat array/ensure array/fill
+       array/insert array/new array/new-filled array/peek array/pop
+       array/push array/remove array/slice array/trim array/weak array?
+       asm
+
+       bad-compile bad-parse band blshift bnot boolean? bor brshift
+       brushift buffer buffer/bit buffer/bit-clear buffer/bit-set
+       buffer/bit-toggle buffer/blit buffer/clear buffer/fill
+       buffer/format buffer/format-at buffer/from-bytes buffer/new
+       buffer/new-filled buffer/popn buffer/push buffer/push-at
+       buffer/push-byte buffer/push-float32 buffer/push-float64
+       buffer/push-string buffer/push-uint16 buffer/push-uint32
+       buffer/push-uint64 buffer/push-word buffer/slice buffer/trim
+       buffer? bundle/add bundle/add-directory bundle/add-file
+       bundle/install bundle/installed? bundle/list bundle/manifest
+       bundle/prune bundle/reinstall bundle/topolist bundle/uninstall
+       bundle/update-all bxor bytes?])
+  # =>
+  '@{64 @[% * + - / < <= = > >=]
+
+     97 @[abstract? accumulate accumulate2 all all-bindings
+          all-dynamics any? apply array array/clear array/concat
+          array/ensure array/fill array/insert array/new
+          array/new-filled array/peek array/pop array/push
+          array/remove array/slice array/trim array/weak array? asm]
+
+     98 @[bad-compile bad-parse band blshift bnot boolean? bor brshift
+          brushift buffer buffer/bit buffer/bit-clear buffer/bit-set
+          buffer/bit-toggle buffer/blit buffer/clear buffer/fill
+          buffer/format buffer/format-at buffer/from-bytes buffer/new
+          buffer/new-filled buffer/popn buffer/push buffer/push-at
+          buffer/push-byte buffer/push-float32 buffer/push-float64
+          buffer/push-string buffer/push-uint16 buffer/push-uint32
+          buffer/push-uint64 buffer/push-word buffer/slice buffer/trim
+          buffer? bundle/add bundle/add-directory bundle/add-file
+          bundle/install bundle/installed? bundle/list bundle/manifest
+          bundle/prune bundle/reinstall bundle/topolist
+          bundle/uninstall bundle/update-all bxor bytes?]}
+
+  (group-nicely
+    '@["*args*" "*current-file*" "*debug*" "*defdyn-prefix*"
+       "*doc-color*" "*doc-width*" "*err*" "*err-color*"
+       "*executable*" "*exit*" "*exit-value*" "*ffi-context*"
+       "*lint-error*" "*lint-levels*" "*lint-warn*"
+       "*macro-form*" "*macro-lints*" "*module-cache*"
+       "*module-loaders*" "*module-loading*"
+       "*module-make-env*" "*module-paths*" "*out*"
+       "*peg-grammar*" "*pretty-format*" "*profilepath*"
+       "*redef*" "*syspath*" "*task-id*"])
+  # =>
+  '@{97 @["*args*"]
+     99 @["*current-file*"]
+     100 @["*debug*" "*defdyn-prefix*" "*doc-color*" "*doc-width*"]
+     101 @["*err*" "*err-color*" "*executable*" "*exit*" "*exit-value*"]
+     102 @["*ffi-context*"]
+     108 @["*lint-error*" "*lint-levels*" "*lint-warn*"]
+     109 @["*macro-form*" "*macro-lints*" "*module-cache*"
+           "*module-loaders*" "*module-loading*" "*module-make-env*"
+           "*module-paths*"]
+     111 @["*out*"]
+     112 @["*peg-grammar*" "*pretty-format*" "*profilepath*"]
+     114 @["*redef*"]
+     115 @["*syspath*"]
+     116 @["*task-id*"]}
 
   )

@@ -22,26 +22,28 @@
   (when header
     #(print (string/repeat " " indent) ";; " header))
     (print ";; " header))
-  (print (t/format (stringify things) indent indent indent cols))
+  (def groups (t/group-nicely things))
+  (each group-name (sort (keys groups))
+    (print (t/format (stringify (get groups group-name)) 
+                     indent indent indent cols)))
   (print))
 
-(def indent 15)
 (def cols 72)
 
 (defn main
   [& args]
-  (dump n/dynamic-variables indent cols "dynamic variables")
+  (dump n/dynamic-variables 15 cols "dynamic variables")
   #
-  (dump n/variables indent cols "builtin variables")
+  (dump n/variables 15 cols "builtin variables")
   #
-  (dump n/jpm-callables indent cols "jpm builtin values")
+  (dump n/jpm-callables 15 cols "jpm builtin values")
   #
-  (dump n/special-forms indent cols "special forms")
+  (dump n/special-forms 15 cols "special forms")
   #
-  (dump n/macros indent cols "builtin macros")
-  (dump n/obsolete-macros indent cols "obsolete builtin macros")
+  (dump n/macros 8 cols "builtin macros")
+  (dump n/obsolete-macros 8 cols "obsolete builtin macros")
   #
-  (dump n/functions indent cols "builtin functions")
-  (dump n/debug-functions indent cols "builtin debug functions")
-  (dump n/obsolete-functions indent cols "obsolete builtin functions"))
+  (dump n/functions 8 cols "builtin functions")
+  (dump n/debug-functions 8 cols "builtin debug functions")
+  (dump n/obsolete-functions 8 cols "obsolete builtin functions"))
 

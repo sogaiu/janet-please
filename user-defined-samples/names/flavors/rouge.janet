@@ -22,7 +22,10 @@
   (when header
     #(print (string/repeat " " indent) "# " header))
     (print "# " header))
-  (print (t/format (stringify things) indent indent indent cols))
+  (def groups (t/group-nicely things))
+  (each group-name (sort (keys groups))
+    (print (t/format (stringify (get groups group-name)) 
+                     indent indent indent cols)))
   (print))
 
 (def indent 15)

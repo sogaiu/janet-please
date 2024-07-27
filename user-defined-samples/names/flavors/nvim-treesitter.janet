@@ -21,10 +21,13 @@
   [things &opt indent cols header]
   (when header
     (print ";; " header))
-  (print (stringify things))
+  (def groups (t/group-nicely things))
+  (each group-name (sort (keys groups))
+    (print (t/format (stringify (get groups group-name))
+                     indent indent indent cols)))
   (print))
 
-(def indent 0)
+(def indent 4)
 (def cols 72)
 
 (defn main
@@ -36,5 +39,12 @@
   #
   (dump n/functions indent cols "builtin functions")
   (dump n/debug-functions indent cols "builtin debug functions")
-  (dump n/obsolete-functions indent cols "obsolete builtin functions"))
+  (dump n/obsolete-functions indent cols "obsolete builtin functions")
+  #
+  (print "Consider checking contribution guidelines and the content")
+  (print "of the last successful PR as nvim-treesitter may have")
+  (print "a specific formatter they want used.")
+  (print)
+  (print "https://github.com/nvim-treesitter/nvim-treesitter/pull/6789"))
+
 
