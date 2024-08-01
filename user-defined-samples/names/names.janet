@@ -153,8 +153,8 @@
      first flatten flatten-into flush flycheck freeze frequencies
      from-pairs function?
 
-     gccollect gcinterval gcsetinterval gensym get get-in getline
-     getproto group-by
+     gccollect gcinterval gcsetinterval gensym geomean get get-in
+     getline getproto group-by
 
      has-key? has-value? hash
 
