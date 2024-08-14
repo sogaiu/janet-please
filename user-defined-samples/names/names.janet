@@ -107,9 +107,9 @@
 
      abstract? accumulate accumulate2 all all-bindings all-dynamics
      any? apply array array/clear array/concat array/ensure array/fill
-     array/insert array/new array/new-filled array/peek array/pop
-     array/push array/remove array/slice array/trim array/weak array?
-     asm
+     array/insert array/join array/new array/new-filled array/peek
+     array/pop array/push array/remove array/slice array/trim
+     array/weak array? asm
 
      bad-compile bad-parse band blshift bnot boolean? bor brshift
      brushift buffer buffer/bit buffer/bit-clear buffer/bit-set
@@ -122,7 +122,7 @@
      buffer? bundle/add bundle/add-bin bundle/add-directory
      bundle/add-file bundle/install bundle/installed? bundle/list
      bundle/manifest bundle/prune bundle/reinstall bundle/topolist
-     bundle/uninstall bundle/update-all bxor bytes?
+     bundle/uninstall bundle/update-all bundle/whois bxor bytes?
 
      cancel cfunction? cli-main cmp comp compare compare< compare<=
      compare= compare> compare>= compile complement count curenv
@@ -223,8 +223,8 @@
      table/proto-flatten table/rawget table/setproto table/to-struct
      table/weak table/weak-keys table/weak-values table? take
      take-until take-while thaw trace true? truthy? tuple
-     tuple/brackets tuple/setmap tuple/slice tuple/sourcemap
-     tuple/type tuple? type
+     tuple/brackets tuple/join tuple/setmap tuple/slice
+     tuple/sourcemap tuple/type tuple? type
 
      unmarshal untrace update update-in
 
