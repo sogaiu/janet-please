@@ -161,11 +161,8 @@
 
   #(import ./location :as l)
 
-  (-> (l/par
-        ``
-        (# hi there
-        + 1 2)
-        ``)
+  (-> (l/par (string "(# hi there\n"
+                     "+ 1 2)"))
       zip-down
       z/down
       right-skip-wsc
@@ -206,11 +203,8 @@
 
   #(import ./location :as l)
 
-  (-> (l/par
-        ``
-        (# hi there
-        + 1 2)
-        ``)
+  (-> (l/par (string "(# hi there\n"
+                     "+ 1 2)"))
       zip-down
       z/down
       right-skip-wsc
