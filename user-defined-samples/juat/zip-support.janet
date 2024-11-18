@@ -75,7 +75,7 @@
 
 (comment
 
-  (to-entries {:a 1 :b 2})
+  (sort (to-entries {:a 1 :b 2}))
   # =>
   @[[:a 1] [:b 2]]
 
